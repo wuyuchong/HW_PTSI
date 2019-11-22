@@ -1,0 +1,548 @@
+---
+title: "Computer Assignment"
+author:
+- Probability Theory and Statistical Inference 1 
+- Claes Kock
+- Yuchong Wu
+date: "19/9/2019"
+output:
+  pdf_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+```
+
+\newpage
+
+# Assignment 1
+
+Table: Distributions for statistics(reference to the text book)
+
+| $Z$ | Distribution | Reference
+|:----:|:-----:|:-----:
+| $Z_1$ | Normal Distribution | Theorem 7.1 |
+| $Z_2$ | $\chi^2$ Distribution (n-1 df) | Theorem 7.3 |
+| $Z_3$ | $\chi^2$ Distribution (n df) | Theorem 7.2 |
+| $Z_4$ | $t$ Distribution (n-1 df) | Definition 7.2 |
+| $Z_5$ | $F$ Distribution (n-1 df and m-1 df) | Definition 7.3 |
+
+
+Table: Parameters for statistics Z_1
+
+| $Z_1$ | $E(Z_1)$ | $var(Z_1)$ | $sd(Z_1)$ |
+|:----:|:-----:|:-----:|:-----:|
+| theory | $\mu$ | $\sigma^2/n$ | $\sqrt{\sigma^2/n}$ |
+| n=5 | 0 | 1/5 | $\sqrt{1/5}$ | 
+| n=20 | 0 | 1/20 | $\sqrt{1/20}$ |
+
+
+Table: Parameters for statistics Z_2
+
+| $Z_2$ | $E(Z_2)$ | $var(Z_2)$ | $sd(Z_2)$ |
+|:----:|:-----:|:-----:|:-----:|
+| theory | n-1 | 2n-2 | $\sqrt{2n-2}$ |
+| n=5 | 4 | 8 | $\sqrt{8}$ | 
+| n=20 | 19 | 38 | $\sqrt{38}$ |
+
+
+Table: Parameters for statistics Z_3
+
+| $Z_3$ | $E(Z_3)$ | $var(Z_3)$ | $sd(Z_3)$ |
+|:----:|:-----:|:-----:|:-----:|
+| theory | n | 2n | $\sqrt{2n}$ |
+| n=5 | 5 | 10 | $\sqrt{10}$ | 
+| n=20 | 20 | 40 | $\sqrt{40}$ |
+
+
+Table: Parameters for statistics Z_4
+
+| $Z_4$ | $E(Z_4)$ | $var(Z_4)$ | $sd(Z_4)$ |
+|:----:|:-----:|:-----:|:-----:|
+| theory | 0 | (n-1)/(n-3) | $\sqrt{(n-1)/(n-3)}$ |
+| n=5 | 0 | 2 | $\sqrt{2}$ | 
+| n=20 | 0 | 19/17 | $\sqrt{19/17}$ |
+
+\newpage
+
+Table: Parameters for statistics Z_5
+
+| $Z_5$ | $E(Z_5)$ | $var(Z_5)$ | $sd(Z_5)$ |
+|:----:|:-----:|:-----:|:-----:|
+| theory | $\frac{d_{2}}{d_{2}-2}$ | $\frac{2 d_{2}^{2}\left(d_{1}+d_{2}-2\right)}{d_{1}\left(d_{2}-2\right)^{2}\left(d_{2}-4\right)}$ | $\sqrt{\frac{2 d_{2}^{2}\left(d_{1}+d_{2}-2\right)}{d_{1}\left(d_{2}-2\right)^{2}\left(d_{2}-4\right)}}$ |
+| n=5, m=20 | $19/17$ | $2527/2890=0.87$ | $\sqrt{2527/2890}=0.94$ | 
+
+*Notes: $d_1 = n-1$ , $d_2 = m-1$*
+
+# Assignment 2
+
+## Simulation study for n = 5
+
+### Sampling
+
+```{r}
+n = 5
+ma = matrix(rnorm(1000*n), 1000, n)
+mu = 0
+sigma = 1
+```
+
+### Z1
+
+```{r}
+ve11 = apply(ma, 1, mean)
+
+# E(Z_1)
+mean(ve11)
+
+# var(Z_1)
+var(ve11)
+
+# sd(Z_1)
+sd(ve11)
+```
+
+### Z2
+
+```{r}
+ve12 = c()
+ma_2 = ma^2
+for(i in 1:nrow(ma))
+{
+  new = sum(ma_2[i,]) - n * (mean(ma[i,])^2)
+  ve12 = c(ve12, new)
+}
+
+# E(Z_2)
+mean(ve12)
+
+# var(Z_2)
+var(ve12)
+
+# sd(Z_2)
+sd(ve12)
+
+```
+
+### Z3
+
+```{r}
+ve13 = c()
+for(i in 1:nrow(ma))
+{
+  new = 0
+  for(j in 1:ncol(ma))
+  {
+    new = new + (ma[i,j] - mu)^2
+  }
+  new = new / (sigma^2)
+  ve13 = c(ve13, new)
+}
+
+# E(Z_3)
+mean(ve13)
+
+# var(Z_3)
+var(ve13)
+
+# sd(Z_3)
+sd(ve13)
+```
+
+### Z4
+
+```{r}
+ve14 = c()
+
+for(i in 1:nrow(ma))
+{
+  numerator = (mean(ma[i,]) - mu) / (sigma / sqrt(n))
+  denumerator = (sum(ma[i,]^2) - n*mean(ma[i,])^2) / ((n-1)*(sigma^2))
+  denumerator = sqrt(denumerator)
+  ve14 = c(ve14, (numerator/denumerator))
+}
+
+# E(Z_4)
+mean(ve14)
+
+# var(Z_4)
+var(ve14)
+
+# sd(Z_4)
+sd(ve14)
+```
+
+
+## Simulation study for n = 20
+
+### Sampling
+
+```{r}
+n = 20
+ma = matrix(rnorm(1000*n), 1000, n)
+mu = 0
+sigma = 1
+```
+
+### Z1
+
+```{r}
+ve21 = apply(ma, 1, mean)
+
+# E(Z_1)
+mean(ve21)
+
+# var(Z_1)
+var(ve21)
+
+# sd(Z_1)
+sd(ve21)
+```
+
+### Z2
+
+```{r}
+ve22 = c()
+ma_2 = ma^2
+for(i in 1:nrow(ma))
+{
+  new = sum(ma_2[i,]) - n * (mean(ma[i,])^2)
+  ve22 = c(ve22, new)
+}
+
+# E(Z_2)
+mean(ve22)
+
+# var(Z_2)
+var(ve22)
+
+# sd(Z_2)
+sd(ve22)
+```
+
+### Z3
+
+```{r}
+ve23 = c()
+for(i in 1:nrow(ma))
+{
+  new = 0
+  for(j in 1:ncol(ma))
+  {
+    new = new + (ma[i,j] - mu)^2
+  }
+  new = new / (sigma^2)
+  ve23 = c(ve23, new)
+}
+
+# E(Z_3)
+mean(ve23)
+
+# var(Z_3)
+var(ve23)
+
+# sd(Z_3)
+sd(ve23)
+```
+
+### Z4
+
+```{r warning=FALSE}
+ve24 = c()
+
+for(i in 1:nrow(ma))
+{
+  numerator = (mean(ma[i,]) - mu) / (sigma / sqrt(n))
+  denumerator = (sum(ma[i,]^2) - n*mean(ma[i,])^2) / ((n-1)*(sigma^2))
+  denumerator = sqrt(denumerator)
+  ve24 = c(ve24, (numerator/denumerator))
+}
+
+# E(Z_4)
+mean(ve24)
+
+# var(Z_4)
+var(ve24)
+
+# sd(Z_4)
+sd(ve24)
+```
+
+
+## Simulation study for n = 5 and m = 20
+
+### Sampling
+
+```{r}
+ma = matrix(rnorm(5000), 1000, 5)
+ma_y = matrix(rnorm(20000), 1000, 20)
+n = 5
+m = 20
+mu = 0
+sigma = 1
+```
+
+### Z5
+
+```{r}
+ve5 = c()
+
+for(i in 1:nrow(ma))
+{
+  numerator = (sum(ma[i,]^2) - n*mean(ma[i,])^2) / ((n-1)*(sigma^2))
+  denumerator = (sum(ma_y[i,]^2) - n*mean(ma_y[i,])^2) / ((m-1)*(sigma^2))
+  ve5 = c(ve5, (numerator/denumerator))
+}
+
+# E(Z_5)
+mean(ve5)
+
+# var(Z_5)
+var(ve5)
+
+# sd(Z_5)
+sd(ve5)
+```
+
+\newpage
+
+## Comparison between theoretical values and simulated values
+
+```{r echo=FALSE}
+table = data.frame(Df = c("n=5", "n=20"),
+                   Theo_E = c(0, 0),
+                   Sim_E = c(mean(ve11), mean(ve21)),
+                   Theo_Var =c(1/5, 1/20),
+                   Sim_Var =c(var(ve11), var(ve21)),
+                   Theo_Sd = c(sqrt(1/5), sqrt(1/20)),
+                   Sim_Sd = c(sd(ve11), sd(ve21)))
+kable(table, caption = "Comparison between theoretical values and simulation values for Z1", digits = 2)
+```
+
+```{r echo=FALSE}
+table = data.frame(Df = c("n=5", "n=20"),
+                   Theo_E = c(4, 19),
+                   Sim_E = c(mean(ve12), mean(ve22)),
+                   Theo_Var =c(8, 38),
+                   Sim_Var =c(var(ve12), var(ve22)),
+                   Theo_Sd = c(sqrt(8), sqrt(38)),
+                   Sim_Sd = c(sd(ve12), sd(ve22)))
+kable(table, caption = "Comparison between theoretical values and simulation values for Z2", digits = 2)
+```
+
+```{r echo=FALSE}
+table = data.frame(Df = c("n=5", "n=20"),
+                   Theo_E = c(5, 20),
+                   Sim_E = c(mean(ve13), mean(ve23)),
+                   Theo_Var =c(10, 40),
+                   Sim_Var =c(var(ve13), var(ve23)),
+                   Theo_Sd = c(sqrt(10), sqrt(40)),
+                   Sim_Sd = c(sd(ve13), sd(ve23)))
+kable(table, caption = "Comparison between theoretical values and simulation values for Z3", digits = 2)
+```
+
+```{r echo=FALSE}
+table = data.frame(Df = c("n=5", "n=20"),
+                   Theo_E = c(0, 0),
+                   Sim_E = c(mean(ve14), mean(ve24)),
+                   Theo_Var =c(2, 19/17),
+                   Sim_Var =c(var(ve14), var(ve24)),
+                   Theo_Sd = c(sqrt(2), sqrt(19/17)),
+                   Sim_Sd = c(sd(ve14), sd(ve24)))
+kable(table, caption = "Comparison between theoretical values and simulation values for Z4", digits = 2)
+```
+
+```{r echo=FALSE}
+table = data.frame(Df = c("n=5, m=20"),
+                   Theo_E = 19/17,
+                   Sim_E = mean(ve5),
+                   Theo_Var = 0.87,
+                   Sim_Var = var(ve5),
+                   Theo_Sd = 0.94,
+                   Sim_Sd = sd(ve5))
+kable(table, caption = "Comparison between theoretical values and simulation values for Z5", digits = 2)
+```
+
+\newpage
+
+## Histograms for statistics
+
+### Z1
+
+#### Histograms for simulation study (n=5)
+
+##### Theoretical
+
+```{r out.width='60%', fig.align='center'}
+x <- seq(-2, 2, length=1000)
+y <- dnorm(x, mean=0, sd=sqrt(1/5))
+plot(x, y, type="l", lwd=1)
+```
+
+#### Simulation
+
+```{r out.width='60%', fig.align='center'}
+hist(ve11, xlim = range(-2,2))
+```
+
+\newpage
+
+#### Histograms for simulation study (n=20)
+
+##### Theoretical
+
+```{r out.width='60%', fig.align='center'}
+x <- seq(-2, 2, length=1000)
+y <- dnorm(x, mean=0, sd=sqrt(1/20))
+plot(x, y, type="l", lwd=1)
+```
+
+#### Simulation
+
+```{r out.width='60%', fig.align='center'}
+hist(ve21, xlim = range(-2,2))
+```
+
+#### Comment for Z1
+
+Our 2 Histogram models for n = 5 and n = 20 seem to be normally distributed. They seem to be focused around the theoretical expected value, which is 0. The difference between the 2 models is in the variance, where a larger n leads to a smaller variance, which will make the model more evenly distributed. An increase in the sample size also seems to lead to an increase in height of the model, compared to its width, as n = 20 is mostly distributed between -1 and 1.
+
+### Z2
+
+#### Histograms for simulation study (n=5)
+
+##### Theoretical
+
+```{r out.width='60%', fig.align='center'}
+curve(dchisq(x, df=4), xlim = range(0, 30))
+```
+
+##### Simulation
+
+```{r out.width='60%', fig.align='center'}
+hist(ve12, xlim = range(0, 30))
+```
+
+\newpage
+
+#### Histograms for simulation study (n=20)
+
+##### Theoretical
+
+```{r out.width='60%', fig.align='center'}
+curve(dchisq(x, df=19), xlim = range(0, 30))
+```
+
+##### Simulation
+
+```{r out.width='60%', fig.align='center'}
+hist(ve22, xlim = range(0, 30))
+```
+
+#### Comment for Z2
+
+The range of the distribution for both models is potisitive, and the distributions seem to follow their theoretical models. They seem to be focused around the theoretical expected value, which is equal to the sample size minus 1. We can also observe that the higher the sample size, the more the distribution peaks futher away from 0. 
+
+\newpage
+
+### Z3
+
+#### Histograms for simulation study (n=5)
+
+##### Theoretical
+
+```{r out.width='60%', fig.align='center'}
+curve(dchisq(x, df=5), xlim = range(0, 30))
+```
+
+##### Simulation
+
+```{r out.width='60%', fig.align='center'}
+hist(ve13, xlim = range(0, 30))
+```
+
+\newpage
+
+#### Histograms for simulation study (n=20)
+
+##### Theoretical
+
+```{r out.width='60%', fig.align='center'}
+curve(dchisq(x, df=20), xlim = range(0, 30))
+```
+
+##### Simulation
+
+```{r out.width='60%', fig.align='center'}
+hist(ve23, xlim = range(0, 30))
+```
+
+
+#### Comment for Z3
+
+The distributions for Z3 is quite similiar to those for Z2, for the reason that they are the same distribution with different degrees of freedom. The mean, variance and standard deviation are sightly larger from those of Z2, due to one extra degree.
+
+\newpage
+
+### Z4
+
+#### Histograms for simulation study (n=5)
+
+##### Theoretical
+
+```{r out.width='60%', fig.align='center'}
+curve(dt(x, df=4), xlim = range(-5, 5))
+```
+
+##### Simulation
+
+```{r out.width='60%', fig.align='center'}
+hist(ve14, xlim = range(-5, 5))
+```
+
+\newpage
+
+#### Histograms for simulation study (n=20)
+
+##### Theoretical
+
+```{r out.width='60%', fig.align='center'}
+curve(dt(x, df=19), xlim = range(-5, 5))
+```
+
+##### Simulation
+
+```{r out.width='60%', fig.align='center'}
+hist(ve24, xlim = range(-5, 5))
+```
+
+
+#### Comment for Z4
+
+The two models of the T-distribution *(n = 5 and n = 20)* are quite the same, whose expected values are both equal to 0. Since the variance of T-distribution is $\frac{n}{n-2}$, a larger sample size *(n = 20)* leads to the variance being closer to 1. As can be seen in the plot, the model with the larger sample size is more concentrated around the expected value, which is 0. If the sample size goes really large, it can be imagined that the whole distribution will be almost completely centered around 0.
+
+\newpage
+
+### Z5
+
+#### Histograms for simulation study (n=5, m=20)
+
+##### Theoretical
+
+```{r out.width='60%', fig.align='center'}
+curve(df(x, df1 = 4, df2 = 19), xlim = range(0, 5))
+```
+
+##### Simulation
+
+```{r out.width='60%', fig.align='center'}
+hist(ve5, xlim = range(0, 5))
+```
+
+#### Comment for Z5
+
+The range of the distribution for the model is always potisitive, and the distributions seem to follow its theoretical models. As can be seen in the plot, the F-distribution is similiar to chi-square distribution in some particular situations. Compared to the chi-square distribution, the peak of the F-distribution will never exceed 1. The model seems to be focused around the theoretical expected value, which is almost equal to 1 when the sample size is really large. With the increase of the randon variable*(x)*, the probability density will gradually approach 0.
